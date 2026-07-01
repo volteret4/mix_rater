@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Music Recs</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 40px;
+            }
+            input[type="range"] {
+                width: 100%;
+            }
+            .rec {
+                margin: 5px 0;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>🎚️ Recommendation Engine</h2>
+
+        <div id="sliders"></div>
+
+        <button onclick="search()">Buscar</button>
+
+        <h3>Resultados</h3>
+        <div id="results"></div>
+
+        <script src="/static/recs.js"></script>
+    </body>
+</html>
