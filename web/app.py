@@ -25,6 +25,105 @@ DIMENSIONS = [
 
 app = Flask(__name__)
 
+# ── Panel de configuración (⚙) ───────────────────────────────────────────────
+# Mismo patrón que el resto de apps. No hay credenciales en este servicio —
+# solo MIX_RATER_DB_PATH, la ruta host del bind mount (docker-compose la
+# interpola desde el .env raíz de tumtumpa, no desde uno propio). MUSIC_RATER_DB
+# (arriba) es el mount point FIJO dentro del contenedor (/data/music_rater.db,
+# ya fijado por "environment:" en docker-compose) y no hace falta exponerlo.
+SETTINGS_ROOT_ENV_PATH = "/app/root.env"
+SETTINGS_PASSWORD = os.environ.get("SETTINGS_PASSWORD", "")
+VARS_SPEC = [
+    {"name": "MIX_RATER_DB_PATH", "secret": False, "location": "root",
+     "help": "Ruta host de music_rater.db (bind mount — requiere recrear el contenedor)"},
+]
+_HAS_SECRETS = any(v.get("secret") for v in VARS_SPEC)
+
+
+def _read_env_file(path):
+    values = {}
+    if not os.path.exists(path):
+        return values
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            s = line.strip()
+            if not s or s.startswith("#") or "=" not in s:
+                continue
+            k, v = s.split("=", 1)
+            v = v.strip()
+            if len(v) >= 2 and v[0] == v[-1] and v[0] in ('"', "'"):
+                v = v[1:-1]
+            values[k.strip()] = v
+    return values
+
+
+def _write_env_file(path, updates):
+    lines = []
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+    seen = set()
+    out = []
+    for line in lines:
+        s = line.strip()
+        if s and not s.startswith("#") and "=" in s:
+            k = s.split("=", 1)[0].strip()
+            if k in updates:
+                out.append(f"{k}={updates[k]}\n")
+                seen.add(k)
+                continue
+        out.append(line)
+    for k, v in updates.items():
+        if k not in seen:
+            if out and not out[-1].endswith("\n"):
+                out[-1] += "\n"
+            out.append(f"{k}={v}\n")
+    with open(path, "w", encoding="utf-8") as f:
+        f.writelines(out)
+
+
+def _current_value(spec):
+    file_vals = _read_env_file(SETTINGS_ROOT_ENV_PATH)
+    return file_vals.get(spec["name"], os.environ.get(spec["name"], spec.get("default", "")))
+
+
+def _check_auth(password):
+    if not SETTINGS_PASSWORD:
+        return not _HAS_SECRETS
+    return password == SETTINGS_PASSWORD
+
+
+@app.route("/api/settings", methods=["POST"])
+def api_settings():
+    d = request.get_json(silent=True) or {}
+    password = d.get("password") or ""
+    requires = bool(SETTINGS_PASSWORD) or _HAS_SECRETS
+    authorized = _check_auth(password)
+    if requires and not authorized:
+        error = "Contraseña incorrecta" if password else None
+        if not SETTINGS_PASSWORD:
+            error = "Este servicio tiene credenciales pero no hay SETTINGS_PASSWORD configurada. Añádela al .env y reinicia el contenedor."
+        return jsonify({"requires_password": True, "authorized": False, "error": error})
+    vars_out = [
+        {"name": v["name"], "value": _current_value(v), "secret": v["secret"], "help": v.get("help", "")}
+        for v in VARS_SPEC
+    ]
+    return jsonify({"requires_password": requires, "authorized": True, "vars": vars_out})
+
+
+@app.route("/api/settings/save", methods=["POST"])
+def api_settings_save():
+    d = request.get_json(silent=True) or {}
+    if not _check_auth(d.get("password") or ""):
+        return jsonify({"error": "Contraseña incorrecta"}), 403
+    known = {v["name"] for v in VARS_SPEC}
+    updates = {k: v for k, v in (d.get("values") or {}).items() if k in known}
+    if not updates:
+        return jsonify({"error": "Nada que guardar"}), 400
+    _write_env_file(SETTINGS_ROOT_ENV_PATH, updates)
+    return jsonify({"ok": True, "message": ("Guardado. Es una ruta de bind mount — hace falta "
+                    "RECREAR el contenedor (docker compose up -d --build), no basta con reiniciarlo.")})
+
 
 # ---------------- DB ----------------
 
