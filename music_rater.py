@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 from mutagen import File as AudioFile
 
-DB = os.path.expanduser("~/Scripts/dbs/music_rater.db")
+DB = os.environ.get("MUSIC_RATER_DB", os.path.expanduser("~/Scripts/dbs/music_rater.db"))
 
 DIMENSIONS = [
     "alegre_melancolica",

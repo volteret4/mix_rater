@@ -36,6 +36,8 @@ SETTINGS_PASSWORD = os.environ.get("SETTINGS_PASSWORD", "")
 VARS_SPEC = [
     {"name": "MIX_RATER_DB_PATH", "secret": False, "location": "root",
      "help": "Ruta host de music_rater.db (bind mount — requiere recrear el contenedor)"},
+    {"name": "MIX_RATER_MUSIC_PATH", "secret": False, "location": "root",
+     "help": "Ruta host de la colección a escanear (bind mount, solo lectura — requiere recrear el contenedor)"},
 ]
 _HAS_SECRETS = any(v.get("secret") for v in VARS_SPEC)
 
