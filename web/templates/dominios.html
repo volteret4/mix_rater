@@ -2,6 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Dominios — Music Rater</title>
         <script src="/static/settings.js"></script>
         <script src="/static/info.js"></script>
@@ -45,6 +46,8 @@
                 background: var(--border);
                 border-bottom: 1px solid var(--border);
                 flex-shrink: 0;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             nav a {
                 padding: 12px 20px;
@@ -56,6 +59,8 @@
                 letter-spacing: 0.1em;
                 text-transform: uppercase;
                 transition: all 0.15s;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
             nav a:hover,
             nav a.active {
@@ -69,6 +74,27 @@
                 grid-template-columns: 220px 1fr;
                 flex: 1;
                 overflow: hidden;
+                min-width: 0;
+            }
+            @media (max-width: 768px) {
+                .app-layout {
+                    grid-template-columns: 1fr;
+                    grid-template-rows: auto 1fr;
+                }
+                .sidebar {
+                    flex-direction: row;
+                    max-height: 140px;
+                    border-right: none;
+                    border-bottom: 1px solid var(--border);
+                }
+                .sb-section {
+                    flex: 1;
+                    min-width: 140px;
+                    border-bottom: none;
+                    border-right: 1px solid var(--border);
+                    overflow-y: auto;
+                }
+                .sb-section:last-child { border-right: none; }
             }
 
             /* ======= SIDEBAR ======= */
@@ -359,6 +385,15 @@
                 color: var(--text-muted);
                 padding: 60px 0;
                 text-align: center;
+            }
+            @media (max-width: 480px) {
+                .container { padding: 16px 16px 24px; }
+                select { min-height: 44px; }
+                .btn-toggle { min-height: 44px; }
+                col.col-artist { width: 130px; }
+                col.col-title { width: 160px; }
+                td.star-cell, td.edit-cell, td.vote-cell { height: 40px; }
+                nav a { padding: 12px 14px; }
             }
         </style>
     </head>

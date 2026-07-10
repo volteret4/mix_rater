@@ -2,6 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Music Rater</title>
         <script src="/static/settings.js"></script>
         <script src="/static/info.js"></script>
@@ -49,6 +50,8 @@
                 background: var(--border);
                 border-bottom: 1px solid var(--border);
                 flex-shrink: 0;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             nav a {
                 padding: 12px 20px;
@@ -60,6 +63,8 @@
                 letter-spacing: 0.1em;
                 text-transform: uppercase;
                 transition: all 0.15s;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
             nav a:hover,
             nav a.active {
@@ -73,6 +78,28 @@
                 grid-template-columns: 220px 1fr;
                 flex: 1;
                 overflow: hidden;
+                min-width: 0;
+            }
+            @media (max-width: 768px) {
+                .app-layout {
+                    grid-template-columns: 1fr;
+                    grid-template-rows: auto 1fr;
+                }
+                .sidebar {
+                    flex-direction: row;
+                    max-height: 140px;
+                    border-right: none;
+                    border-bottom: 1px solid var(--border);
+                }
+                .sb-section {
+                    flex: 1;
+                    min-width: 140px;
+                    border-bottom: none;
+                    border-right: 1px solid var(--border);
+                    overflow-y: auto;
+                }
+                .sb-section:last-child { border-right: none; }
+                #wizard-panel { left: 0; }
             }
 
             /* ======= SIDEBAR ======= */
@@ -333,9 +360,20 @@
             @media (max-width: 600px) {
                 .dims-grid { grid-template-columns: 1fr; }
             }
+            @media (max-width: 480px) {
+                .container { padding: 16px 16px 0; }
+                .header { flex-wrap: wrap; }
+                .header-actions { flex-direction: row; width: 100%; }
+                .header-actions .btn { flex: 1; min-height: 44px; }
+                nav a { padding: 12px 14px; }
+                .sb-item { min-height: 44px; }
+                .save-row { flex-wrap: wrap; }
+                .save-row .btn { min-height: 44px; }
+            }
             .dim-block {
                 background: var(--surface);
                 padding: 14px;
+                min-width: 0;
                 transition: background 0.2s;
             }
             .dim-block.rated { background: var(--done); }
@@ -383,7 +421,14 @@
             .star-btn.on { color: var(--accent); }
 
             /* CHECK CELLS */
-            .check-row { display: flex; gap: 3px; align-items: center; }
+            .check-row {
+                display: flex;
+                gap: 3px;
+                align-items: center;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 2px;
+            }
             .check-cell {
                 position: relative;
                 width: 28px;
@@ -511,7 +556,13 @@
                 padding: 4px 10px;
             }
             .wiz-close:hover { border-color: var(--accent2); color: var(--accent2); }
-            .wiz-body { display: flex; align-items: center; gap: 12px; }
+            .wiz-body {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
             .wiz-pole {
                 font-family: "IBM Plex Mono", monospace;
                 font-size: 10px;
@@ -535,6 +586,8 @@
                 justify-content: center;
                 width: 48px;
                 height: 48px;
+                min-width: 44px;
+                min-height: 44px;
                 border: 1px solid var(--border-bright);
                 background: var(--surface2);
                 flex-shrink: 0;

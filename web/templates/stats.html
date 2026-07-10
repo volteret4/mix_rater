@@ -2,6 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Stats — Music Collection</title>
         <script src="/static/settings.js"></script>
         <script src="/static/info.js"></script>
@@ -42,6 +43,8 @@
                 gap: 1px;
                 background: var(--border);
                 border-bottom: 1px solid var(--border);
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             nav a {
                 padding: 12px 20px;
@@ -53,6 +56,8 @@
                 letter-spacing: 0.1em;
                 text-transform: uppercase;
                 transition: all 0.15s;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
             nav a:hover,
             nav a.active {
@@ -258,6 +263,15 @@
                 font-size: 12px;
                 color: var(--text-muted);
                 padding: 40px 0;
+            }
+            @media (max-width: 768px) {
+                .container { padding: 24px 16px; }
+                .coverage-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            }
+            @media (max-width: 480px) {
+                .kpi-row { grid-template-columns: 1fr 1fr; }
+                .genre-bar-wrap { width: 70px; }
+                nav a { padding: 12px 14px; }
             }
         </style>
     </head>
