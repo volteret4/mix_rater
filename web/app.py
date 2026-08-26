@@ -236,7 +236,14 @@ def cosine(a, b):
 # ---------------- PLAYER ----------------
 
 def play(path):
-    subprocess.Popen(["deadbeef", path])
+    # Best-effort: este servicio corre en el servidor (Docker), sin salida
+    # de audio propia ni deadbeef instalado -- la reproducción real, si la
+    # hay, pasa por Airsonic/el cliente, no por aquí. No debe tirar la
+    # respuesta de /api/random ni /api/next si falla.
+    try:
+        subprocess.Popen(["deadbeef", path])
+    except OSError:
+        pass
 
 
 # ---------------- PAGES ----------------
