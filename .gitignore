@@ -6,3 +6,4 @@ apks.txt
 .env
 *.env.bak*
 .env.bak*
+datos/
