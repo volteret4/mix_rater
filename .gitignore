@@ -3,3 +3,6 @@ __pycache__/
 *.db
 *.db-journal
 apks.txt
+.env
+*.env.bak*
+.env.bak*
